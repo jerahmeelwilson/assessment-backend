@@ -32,12 +32,15 @@ app.get("/api/compliment", (req, res) => {
   
 });
 
+
+
 const {
   createGoal,
   deleteGoal,
+  completeGoal,
 } = require("./goals.js");
 
 app.post('/api/goals',createGoal);
 app.delete('/api/goals/:id',deleteGoal);
-
+app.put('/api/goals/:id',completeGoal)
 app.listen(4000, () => console.log("Server running on 4000"));

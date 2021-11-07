@@ -13,12 +13,15 @@ module.exports = {
         goals.push(goal);
         res.status(200).send(goals);
         globalId++;
-        console.log(goals);
     },
     deleteGoal: (req,res) => {
         let index = goals.findIndex(element => element.id === +req.params.id);
         goals.splice(index,1);
         res.status(200).send(goals);
-        console.log(goals);
     },
+    completeGoal: (req, res) => {
+        let index = goals.findIndex(element => element.id === +req.params.id);
+        goals[index].crossed = true;
+        res.status(200).send(goals);
+    }
 }

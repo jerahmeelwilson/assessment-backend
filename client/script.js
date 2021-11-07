@@ -4,6 +4,8 @@ console.log("test");
 
 const fortuneButton = document.getElementById("fortuneButton");
 
+
+//Feature 1, GET Request to see fortunes
 fortuneButton.addEventListener("click", ()  => {
     axios.get("http://localhost:4000/api/fortune/")
     .then(res =>{
@@ -11,9 +13,12 @@ fortuneButton.addEventListener("click", ()  => {
     })
 })
 
+
+
 const addGoal = document.getElementById('addGoal');
 const todoList = document.querySelector("section");
 
+//Feature 2: POST Request, adds a goal to goal tracker list
 addGoal.addEventListener("click", (e) => {
     e.preventDefault();
     const goalInput = document.getElementById("goalInput");
@@ -24,6 +29,7 @@ addGoal.addEventListener("click", (e) => {
     .then(res => {
         displayGoals(res.data);             
     })
+    goalInput.value = "";
 });
 
 function displayGoals(goalList){
@@ -31,7 +37,6 @@ function displayGoals(goalList){
     if(goalList.length>0){
         goalList.forEach(goal => {
             let newGoal = document.createElement("form");
-            newGoal.classList.add("goal");
             let goalText = document.createElement('span');
             let deleteGoal = document.createElement("button");
             deleteGoal.innerText ="X";
@@ -39,23 +44,33 @@ function displayGoals(goalList){
             newGoal.appendChild(goalText);
             newGoal.appendChild(deleteGoal);
             todoList.appendChild(newGoal);
-            goalText.addEventListener('click',crossOut);
+            goalText.onclick = function () {
+                crossOut(goal.id);
+            }
             deleteGoal.onclick = function (e) {
                 e.preventDefault();
                 removeGoal(goal.id);
+            }
+            if(goal.crossed){
+                goalText.style.textDecoration ="line-through";
             }
         })
     }
 }
 
-function sayHello(e){
-    console.log(e);
+
+//Feature 3: PUT request, marks a goal as completed 
+function crossOut(goalId){
+   axios.put(`http://localhost:4000/api/goals/${goalId}`)
+   .then( res => {
+       displayGoals(res.data);
+   })
 }
+
+//Feature 4: DELETE request, removes a goal from the goal tracker.
 function removeGoal(goalId){
-    todoList.innerHTML ="";
     axios.delete(`http://localhost:4000/api/goals/${goalId}`)
     .then( res =>{
-        console.log(res.data);
         displayGoals(res.data);
     }).catch(err => console.log(err));
 }
