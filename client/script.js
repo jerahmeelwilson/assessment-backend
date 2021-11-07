@@ -12,7 +12,7 @@ fortuneButton.addEventListener("click", ()  => {
 })
 
 const addGoal = document.getElementById('addGoal');
-const body = document.querySelector("body");
+const todoList = document.querySelector("section");
 
 addGoal.addEventListener("click", (e) => {
     e.preventDefault();
@@ -22,32 +22,40 @@ addGoal.addEventListener("click", (e) => {
     }
     axios.post("http://localhost:4000/api/goals/",goal)
     .then(res => {
-        console.log(res.data)
-        createNewGoal(res.data);             
+        displayGoals(res.data);             
     })
 });
 
-function createNewGoal(goalList){
-    let newGoal = document.createElement("form");
-    newGoal.classList.add("goal");
-    let goalText = document.createElement('span');
-    let deleteGoal = document.createElement("button");
-    deleteGoal.innerText ="X";
-    goalText.innerText = `${goalList[goalList.length-1].goalText}\t`;
-    newGoal.appendChild(goalText);
-    newGoal.appendChild(deleteGoal);
-    body.appendChild(newGoal);
-    newGoal.addEventListener('click',sayHello);
-    deleteGoal.onclick = function (e) {
-        e.preventDefault();
-        console.log("delete");
+function displayGoals(goalList){
+    todoList.innerHTML ="";
+    if(goalList.length>0){
+        goalList.forEach(goal => {
+            let newGoal = document.createElement("form");
+            newGoal.classList.add("goal");
+            let goalText = document.createElement('span');
+            let deleteGoal = document.createElement("button");
+            deleteGoal.innerText ="X";
+            goalText.innerText = `${goal.goalText}\t`;
+            newGoal.appendChild(goalText);
+            newGoal.appendChild(deleteGoal);
+            todoList.appendChild(newGoal);
+            goalText.addEventListener('click',crossOut);
+            deleteGoal.onclick = function (e) {
+                e.preventDefault();
+                removeGoal(goal.id);
+            }
+        })
     }
 }
 
 function sayHello(e){
     console.log(e);
 }
-function deleteGoal(e){
-    e.preventDefault();
-    console.log("delete");
+function removeGoal(goalId){
+    todoList.innerHTML ="";
+    axios.delete(`http://localhost:4000/api/goals/${goalId}`)
+    .then( res =>{
+        console.log(res.data);
+        displayGoals(res.data);
+    }).catch(err => console.log(err));
 }
